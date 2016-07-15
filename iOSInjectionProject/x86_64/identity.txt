@@ -1,0 +1,2 @@
+/Users/xinjiejiaoyu/Library/Developer/Xcode/DerivedData/NDBag-cmvcqvwnbqpnmyaylyoiopxwdqlu/Build/Products/Debug-iphonesimulator/NDBag.app
+
