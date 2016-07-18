@@ -9,7 +9,7 @@
 #define BTN_SIDELENGTH 44.f
 
 #import "NDMainViewController.h"
-#import "NDLocalCacheManager.h"
+
 #import "NDLoginViewController.h"
 #import "NDCanvasView.h"
 #import "XMPPManager.h"
@@ -51,6 +51,7 @@
 @property (nonatomic, strong) UIImageView *backgroundIV;
 /** 顶部栏*/
 @property (nonatomic, strong) UIView *topView;
+@property (nonatomic, strong) UILabel *titleLabel;
 /** 清空屏幕按钮*/
 @property (nonatomic, strong) UIButton *clearBtn;
 /** 切换用户按钮*/
@@ -102,6 +103,14 @@
 @property (nonatomic, strong) NSMutableArray *allStudentsArray;
 /** 合成器*/
 @property (strong, nonatomic) AVSpeechSynthesizer *synthesizer;
+/** 观察者*/
+@property (nonatomic, assign, getter=isObserver) BOOL observer;
+/** 自己作为老师加入聊天室的时间*/
+@property (nonatomic, strong) NSString *joinedTime;
+/** 缓存的临时时间*/
+@property (nonatomic, strong) NSString *tempTime;
+/** 缓存临时时间的数组*/
+@property (nonatomic, strong) NSMutableArray *tempTimeArray;
 @end
 
 @implementation NDMainViewController
@@ -114,10 +123,11 @@ static NSString * const reuseIdentifier = @"user";
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    AppDelegate * app = [UIApplication sharedApplication].delegate;
+    app.shouldChangeOrientation = YES;
     
     //初始化界面并对角色做判断
     [self initUI];
-    
     
     self.canvasView.delegate = self;
     
@@ -130,6 +140,19 @@ static NSString * const reuseIdentifier = @"user";
     //注册单元格
     [self.userCollectionView registerClass:[NDUserCell class] forCellWithReuseIdentifier:reuseIdentifier];
 }
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self btnEnable:YES];
+    
+    if (IS_TEACHER) {//如果是教师用户的话就显示学生列表
+        self.bottomView.hidden = NO;
+    } else {
+        self.bottomView.hidden = YES;
+    }
+}
+
 //从本地文件获取图片数据
 - (NSString *)getImageStringFromFile {
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
@@ -210,7 +233,7 @@ static NSString * const reuseIdentifier = @"user";
         _userCollectionView.dataSource = self;
         
     }
-
+    
     return _bottomView;
 }
 #pragma mark 初始化界面
@@ -228,7 +251,7 @@ static NSString * const reuseIdentifier = @"user";
     }];
     _backgroundIV.userInteractionEnabled = YES;
     
-
+    
     
     self.canvasView = [[NDCanvasView alloc] init];
     [_backgroundIV addSubview:self.canvasView];
@@ -240,12 +263,14 @@ static NSString * const reuseIdentifier = @"user";
         }
     }];
     self.canvasView.backgroundColor = [UIColor clearColor];
-
-
-    if (IS_TEACHER) {//如果是教师用户的话就显示学生列表
+    
+    if (IS_TEACHER) {
         self.bottomView.hidden = NO;
+    } else {
+        self.bottomView.hidden = YES;
     }
-
+    
+    
     [self configTopView];
     [self configToolBar];
     [self configBtnEvents];
@@ -322,13 +347,13 @@ static NSString * const reuseIdentifier = @"user";
         }
     }];
     
-    UILabel *titleLabel = [UILabel new];
-    titleLabel.text = @"ND笔记";
-    titleLabel.font = [UIFont systemFontOfSize:22.f];
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.textColor = [UIColor whiteColor];
-    [_topView addSubview:titleLabel];
-    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    _titleLabel = [UILabel new];
+    _titleLabel.text = @"ND笔记";
+    _titleLabel.font = [UIFont systemFontOfSize:22.f];
+    _titleLabel.textAlignment = NSTextAlignmentCenter;
+    _titleLabel.textColor = [UIColor whiteColor];
+    [_topView addSubview:_titleLabel];
+    [_titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.height.equalTo(_topView);
     }];
     
@@ -487,7 +512,7 @@ static NSString * const reuseIdentifier = @"user";
         case 100://清空屏幕按钮
         {
             btn.enabled = YES;
-            if ([self.canvasView.strokesArr count] > 0 || self.canvasView.receivedStrokesArr.count > 0 || self.canvasView.receivedStudentStrokesArr.count > 0) {
+            if ([self.canvasView.strokesArr count] > 0 || (self.canvasView.receivedStudentStrokesArr.count > 0 && IS_TEACHER)) {
                 
                 [self showAlertView];
                 
@@ -499,7 +524,9 @@ static NSString * const reuseIdentifier = @"user";
         case 101://保存按钮
         {
             NSString *message = @"保存成功";
-            [[UIApplication sharedApplication].keyWindow makeToast:message duration:3 position:CSToastPositionCenter];
+            //            [[UIApplication sharedApplication].keyWindow makeToast:message duration:3 position:CSToastPositionCenter];
+            [MBProgressHUD hideHUD];
+            [MBProgressHUD showSuccess:message];
         }
             break;
 #pragma mark 联网功能
@@ -516,7 +543,8 @@ static NSString * const reuseIdentifier = @"user";
             [[NDLocalCacheManager sharedManager] clearLocalCache];
             
             [self dismissViewControllerAnimated:YES completion:^{
-                LogGreen(@"退出登录，切换用户");
+                [MBProgressHUD hideHUD];
+                [MBProgressHUD showSuccess:@"退出登录成功"];
             }];
             
         }
@@ -564,7 +592,7 @@ static NSString * const reuseIdentifier = @"user";
 }
 #pragma mark 撤销回退方法
 - (void)undoAction {
-
+    
     if (IS_TEACHER) {
         [self.xmppRoom sendMessageWithBody:@"{\"msg\":{\"function\":\"Undo\",\"pencolor\":0}}"];
     }
@@ -588,7 +616,7 @@ static NSString * const reuseIdentifier = @"user";
                 CGPoint p = CGPointMake(x, y);
                 NSString *pointStr = NSStringFromCGPoint(p);
                 if ([point isEqualToString:pointStr]) {
-                     [self.canvasView.studentLine.pathInfos removeObject:pathInfo];
+                    [self.canvasView.studentLine.pathInfos removeObject:pathInfo];
                 }
             }
         }];
@@ -658,7 +686,7 @@ static NSString * const reuseIdentifier = @"user";
         UIButton *checkbox = [UIButton buttonWithType:UIButtonTypeCustom];
         checkbox.tag = 108 + i;
         
-
+        
         NSNumber *num = [self.savedSize valueForKey:@"SAVED_SIZE"];
         if (!num && i == 1) {
             checkbox.selected = YES;
@@ -710,7 +738,7 @@ static NSString * const reuseIdentifier = @"user";
 - (void)checkboxBtnClicked:(UIButton *)checkbox {
     
     [self.alertView removeFromSuperview];
-
+    
     for (UIButton *checkboxBtn in self.checkboxes) {
         if (checkboxBtn.tag != checkbox.tag) {
             checkboxBtn.selected = NO;
@@ -780,7 +808,7 @@ static NSString * const reuseIdentifier = @"user";
         self.userID = [[LoginTool sharedLoginTool] generateAUserNameForLoginToXMPPServer];
         [[NSUserDefaults standardUserDefaults] setValue:self.userID forKey:@"USER_ID"];
         
-  
+        
     } else {
         self.appOpenCount = [[[NSUserDefaults standardUserDefaults] valueForKey:@"appOpenCount"] integerValue];
         [[NSUserDefaults standardUserDefaults] setInteger:self.appOpenCount + 1 forKey:@"appOpenCount"];
@@ -802,8 +830,8 @@ static NSString * const reuseIdentifier = @"user";
         [manager loginwithName:self.userID andPassword:PASSWORD];
     }
     
-//    //管理员账号
-//    [manager loginwithName:@"admin" andPassword:@"13269372595"];
+    //    //管理员账号
+    //    [manager loginwithName:@"admin" andPassword:@"13269372595"];
 }
 //懒加载XMPP流
 - (XMPPStream *)xmppStream {
@@ -849,8 +877,6 @@ static NSString * const reuseIdentifier = @"user";
     
     NSString *userID = jsonDic[@"msg"][@"user"][@"userID"];
     
-
-    
     NSDictionary *dict = jsonDic[@"msg"];
 #pragma mark 屏蔽自己发的消息
     if (![occupantJID.resource isEqualToString:self.nickName]) {//接收消息时屏蔽自己
@@ -864,7 +890,7 @@ static NSString * const reuseIdentifier = @"user";
             
             //先清空别人画的
             [self.canvasView.receivedStudentStrokesArr removeAllObjects];
-
+            
             [self.canvasView setNeedsDisplay];
             
             NDStudentLineModel *lineModel = [NDStudentLineModel mj_objectWithKeyValues:dict];
@@ -904,6 +930,7 @@ static NSString * const reuseIdentifier = @"user";
             [self.canvasView.receivedStrokesArr removeAllObjects];
             [self.canvasView.strokesArr removeAllObjects];
             [self.canvasView.receivedStudentStrokesArr removeAllObjects];
+            [self.canvasView.studentLine.pathInfos removeAllObjects];
             self.canvasView.tempLine = nil;
             [self.canvasView setNeedsDisplay];
 #pragma mark 教师上线
@@ -938,18 +965,50 @@ static NSString * const reuseIdentifier = @"user";
                     LogBlue(@"%@", jsonString);
                     [self.xmppRoom sendMessageWithBody:jsonString];
                 }
-
+                
             }
-            
             
 #pragma mark 教师撤销回退功能
         } else if ([function isEqualToString:@"Undo"]) {
             [self.canvasView.receivedStrokesArr removeLastObject];
             [self.canvasView setNeedsDisplay];
+#pragma mark 多名教师登录判断
+        } else if ([function isEqualToString:@"isExisted"] && IS_TEACHER && !self.isObserver) {//如果收到了有教师进入聊天室的消息且自己是老师且自己不是观察者
+            NSString *time = dict[@"currentTime"];
+            
+            if (![self.tempTime isEqualToString:time]) {//如果这次收到的时间跟上次不一样，就把自己的时间发出去
+                [self sendCheckoutMessageWithTime:self.joinedTime];
+                self.tempTime = time;
+            } else {
+                self.tempTime = nil;
+            }
+            
+            long otherTeacherJoinedTime = [time longLongValue];
+            long myJoinedTime = [self.joinedTime longLongValue];
+            LogRed(@"其他老师加入房间的时间为%ld,我自己是老师加入房间的时间是%ld", otherTeacherJoinedTime, myJoinedTime);
+            
+            if (otherTeacherJoinedTime < myJoinedTime) {//别的老师先加入的房间，我是老师后加入的，就变成观察者模式
+                [MBProgressHUD hideHUD];
+                [MBProgressHUD showError:@"房间里存在多个教师，您已成为观察者"];
+                _bottomView.hidden = YES;
+                [self btnEnable:NO];
+            }
+
         }
         
     }
     
+}
+
+- (void)sendCheckoutMessageWithTime:(NSString *)time {
+    //查询房间内是否已经有老师了
+    NSDictionary *funcDic = [NSDictionary dictionaryWithObjectsAndKeys:@"isExisted", @"function", time, @"currentTime", nil];
+    NSDictionary *dict = [NSDictionary dictionaryWithObject:funcDic forKey:@"msg"];
+    NSError *error = nil;
+    NSData *msgData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:&error];
+    NSString *checkout = [[NSString alloc] initWithData:msgData encoding:NSUTF8StringEncoding];
+    LogRed(@"checkout = %@", checkout);
+    [self.xmppRoom sendMessageWithBody:checkout];
     
 }
 
@@ -1005,25 +1064,33 @@ static NSString * const reuseIdentifier = @"user";
     _netBtn.enabled = YES;
 }
 - (void)xmppRoomDidJoin:(XMPPRoom *)sender {
-
+    
     NSString *text = @"已经成功加入进了聊天室";
     LogGreen(@"%@", text);
-    [self.view.window makeToast:text duration:3 position:CSToastPositionCenter];
-
+    
+    [MBProgressHUD hideHUD];
+    [MBProgressHUD showSuccess:text];
+    //    [self.view.window makeToast:text duration:3 position:CSToastPositionCenter];
     
     
     if (IS_TEACHER) {
         NSString *message = [NSString stringWithFormat:@"{\"msg\":{\"function\":\"Online\",\"pencolor\":\"0\"}}"];
         LogBlue(@"发送的内容为 %@", message);
         [self.xmppRoom sendMessageWithBody:message];
+        
+        UInt64 recordTime = [[NSDate date] timeIntervalSince1970]*1000;
+        NSString *currentTime = [NSString stringWithFormat:@"%llu", recordTime];
+        //记录一下自己加入房间时的时间
+        self.joinedTime = currentTime;
+        
+        [self sendCheckoutMessageWithTime:currentTime];
+        
         //如果自己是老师的话，在成功加入聊天室后初始化学生列表数组
         self.allStudentsArray = [NSMutableArray array];
     } else {//如果自己是学生的话，在成功加入聊天室后发送自己的信息，包括ID和头像等
         
         [self sendStudentInfo];
     }
-    
-
     
 }
 
@@ -1047,16 +1114,6 @@ static NSString * const reuseIdentifier = @"user";
         }
     }
     
-
-    //判断房间里是否有老师
-    if ([occupantJID.resource intValue] > 100000 && [occupantJID.resource intValue] < 200000 && IS_TEACHER) {
-        NSString *text = @"聊天室里存在多个教师用户,请切换用户登录";
-        LogGreen(@"%@", text);
-        [self.view.window makeToast:text duration:3 position:CSToastPositionCenter];
-        [self dismissViewControllerAnimated:YES completion:^{
-            LogGreen(@"退出登录，切换用户");
-        }];
-    }
 }
 //有用户离开了聊天室
 - (void)xmppRoom:(XMPPRoom *)sender occupantDidLeave:(XMPPJID *)occupantJID withPresence:(XMPPPresence *)presence {
@@ -1110,6 +1167,7 @@ static NSString * const reuseIdentifier = @"user";
     [self.xmppRoom deactivate];
     self.xmppRoom = nil;
     _netBtn.enabled = YES;
+    [MBProgressHUD hideHUD];
 }
 
 #pragma mark XMPPManagerDelegate 协议中的方法
@@ -1122,16 +1180,18 @@ static NSString * const reuseIdentifier = @"user";
 #pragma mark NDCanvasViewDelegate 协议中的方法
 - (void)didDraw {
     
-    NSDictionary *dic = self.canvasView.currentLine.mj_keyValues;
-    NSDictionary *msgDic = [NSDictionary dictionaryWithObject:dic forKey:@"msg"];
-    NSError *error = nil;
-    NSData *msgData = [NSJSONSerialization dataWithJSONObject:msgDic options:NSJSONWritingPrettyPrinted error:&error];
-    
-    
-    NSString *jsonString = [[NSString alloc] initWithData:msgData encoding:NSUTF8StringEncoding];
-    
-    LogBlue(@"%@", jsonString);
-    [self.xmppRoom sendMessageWithBody:jsonString];
+    if (!self.observer) {
+        NSDictionary *dic = self.canvasView.currentLine.mj_keyValues;
+        NSDictionary *msgDic = [NSDictionary dictionaryWithObject:dic forKey:@"msg"];
+        NSError *error = nil;
+        NSData *msgData = [NSJSONSerialization dataWithJSONObject:msgDic options:NSJSONWritingPrettyPrinted error:&error];
+        
+        
+        NSString *jsonString = [[NSString alloc] initWithData:msgData encoding:NSUTF8StringEncoding];
+        
+        LogBlue(@"%@", jsonString);
+        [self.xmppRoom sendMessageWithBody:jsonString];
+    }
     
 }
 
@@ -1231,5 +1291,26 @@ static NSString * const reuseIdentifier = @"user";
         _synthesizer = [[AVSpeechSynthesizer alloc] init];
     }
     return _synthesizer;
+}
+
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskLandscapeRight;
+}
+
+- (void)btnEnable:(BOOL)state {
+    
+    self.observer = !state;
+    _titleLabel.text = state?@"ND笔记":@"观察者";
+    if (!state) {
+        _bottomView.hidden = !state;
+    }
+    _canvasView.userInteractionEnabled =
+    _trackColorBtn.enabled =
+    _clearBtn.enabled =
+    _undoBtn.enabled =
+    _penSizeBtn.enabled =
+    _saveBtn.enabled = state;
+    
 }
 @end

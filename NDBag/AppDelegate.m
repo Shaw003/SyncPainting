@@ -29,7 +29,13 @@
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
 {
-    return UIInterfaceOrientationMaskLandscapeRight;
+    if (self.shouldChangeOrientation == YES) {
+        return UIInterfaceOrientationMaskLandscapeRight;
+    }
+    else
+    {
+        return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscape;
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

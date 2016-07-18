@@ -182,7 +182,9 @@ typedef NS_ENUM(NSInteger, ConnectServerPurpose)
 
 - (void)showAlert {
     NSString *alertMessage = @"请检查网络是否正常";
-    [[UIApplication sharedApplication].keyWindow makeToast:alertMessage duration:3 position:CSToastPositionCenter];
+//    [[UIApplication sharedApplication].keyWindow makeToast:alertMessage duration:3 position:CSToastPositionCenter];
+    [MBProgressHUD hideHUD];
+    [MBProgressHUD showError:alertMessage];
     [NDMainViewController sharedNDMainViewController].netBtn.enabled = YES;
 }
 @end

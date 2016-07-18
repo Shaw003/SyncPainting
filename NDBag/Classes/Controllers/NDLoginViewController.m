@@ -24,7 +24,9 @@
 #import "NDLoginViewController.h"
 
 #import "NDMainViewController.h"
-#import "NDLocalCacheManager.h"
+
+
+#import "NDOrientationTool.h"
 
 @interface NDLoginViewController () <UIImagePickerControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate>
 
@@ -56,8 +58,14 @@ singleton_implementation(NDLoginViewController);
 
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [MBProgressHUD hideHUD];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    
     
     [self initUI];
 
@@ -121,7 +129,12 @@ singleton_implementation(NDLoginViewController);
     [_backgroundIV addSubview:_nameTF];
     [_nameTF mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(inputBg).offset(10);
-        make.centerY.width.height.equalTo(inputBg);
+        make.centerY.height.equalTo(inputBg);
+        if (CURRENT_DEVICE > 7) {
+            make.width.mas_equalTo(314);
+        } else {
+            make.width.mas_equalTo(274);
+        }
     }];
     
     
@@ -214,6 +227,8 @@ singleton_implementation(NDLoginViewController);
         _takePhotoBtn.selected = !btn.selected;
         [_centerBtn setImage:[UIImage imageNamed:GALLERY_IMAGE] forState:UIControlStateNormal];
     } else if (btn.tag == 105) {//拍照/相册按钮
+        AppDelegate * app = [UIApplication sharedApplication].delegate;
+        app.shouldChangeOrientation = NO;
         if (_takePhotoBtn.isSelected) {
             BOOL isCamera = [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront] || [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear];
             if (isCamera) {
@@ -249,12 +264,19 @@ singleton_implementation(NDLoginViewController);
     // 必须手动,关闭照片选择器
     
     
+    AppDelegate * app = [UIApplication sharedApplication].delegate;
+    app.shouldChangeOrientation = YES;
+    
     [picker dismissViewControllerAnimated:YES completion:nil];
     
+    UIImage *pickedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
     
-    self.pickedImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+    self.pickedImage = [[NDOrientationTool sharedNDOrientationTool] fixOrientation:pickedImage];
+    
     [_centerBtn setImage:self.pickedImage forState:UIControlStateNormal];
 }
+
+
 
 - (void)configBtns {
     _takePhotoBtn = [UIButton new];
@@ -505,4 +527,10 @@ singleton_implementation(NDLoginViewController);
 - (void)injected {
     [self viewDidLoad];
 }
+
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskLandscapeRight;
+}
+
 @end

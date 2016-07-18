@@ -15,6 +15,10 @@
 #import "Singleton.h"
 
 #import "UIView+Toast.h"
+#import "AppDelegate.h"
+#import "NDLocalCacheManager.h"
+#import "MBProgressHUD+KR.h"
+
 
 #define BACKGROUND_IMAGE [UIImage imageNamed:@"bg.jpg"]
 
