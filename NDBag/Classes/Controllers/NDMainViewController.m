@@ -111,6 +111,8 @@
 @property (nonatomic, strong) NSString *tempTime;
 /** 缓存临时时间的数组*/
 @property (nonatomic, strong) NSMutableArray *tempTimeArray;
+/** 网络状态监听*/
+@property (nonatomic, strong) Reachability *hostReach;
 @end
 
 @implementation NDMainViewController
@@ -139,7 +141,74 @@ static NSString * const reuseIdentifier = @"user";
     
     //注册单元格
     [self.userCollectionView registerClass:[NDUserCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    
+    //开启网络状况的监听
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+     
+                                             selector:@selector(reachabilityChanged:)
+     
+                                                 name: kReachabilityChangedNotification
+     
+                                               object: nil];
+    
+    _hostReach = [Reachability reachabilityForLocalWiFi];//可以以多种形式初始化
+    
+    [_hostReach startNotifier]; //开始监听,会启动一个run loop
+    
+    
+
 }
+
+// 连接改变
+- (void)reachabilityChanged:(NSNotification*)note
+{
+    Reachability *curReach = [note object];
+    NSParameterAssert([curReach isKindOfClass:[Reachability class]]);
+    [self updateInterfaceWithReachability:curReach];
+}
+
+
+//处理连接改变后的情况
+- (void)updateInterfaceWithReachability: (Reachability*)curReach
+
+{
+    //对连接改变做出响应的处理动作。
+    NetworkStatus status=[curReach currentReachabilityStatus];
+    
+    [self netStatusDidChangedWith:status];
+    
+}
+
+- (void)netStatusDidChangedWith:(NetworkStatus)status {
+    NSString *message = nil;
+    [MBProgressHUD hideHUD];
+    switch (status) {
+        case NotReachable:
+        {
+            message = @"当前网络不可用,请检查网络是否正常";
+            [MBProgressHUD showError:message];
+            _netBtn.enabled = NO;
+        }
+            break;
+        case ReachableViaWiFi:
+        {
+            message = @"当前为Wi-Fi网络";
+            [MBProgressHUD showSuccess:message];
+            _netBtn.enabled = YES;
+        }
+            break;
+        case ReachableViaWWAN:
+        {
+            message = @"当前为移动网络";
+            [MBProgressHUD showSuccess:message];
+            _netBtn.enabled = YES;
+        }
+            break;
+    }
+    
+}
+
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -151,6 +220,8 @@ static NSString * const reuseIdentifier = @"user";
     } else {
         self.bottomView.hidden = YES;
     }
+    
+    [self updateInterfaceWithReachability:_hostReach];
 }
 
 //从本地文件获取图片数据
@@ -1175,7 +1246,7 @@ static NSString * const reuseIdentifier = @"user";
     NSXMLElement *valueowners = [NSXMLElement elementWithName:@"value"];
     
     
-//    [field addAttributeWithName:@"var" stringValue:@"muc#roomconfig_persistentroom"];  // 永久属性
+    [field addAttributeWithName:@"var" stringValue:@"muc#roomconfig_persistentroom"];  // 永久属性
     [fieldowners addAttributeWithName:@"var" stringValue:@"muc#roomconfig_roomowners"];  // 谁创建的房间
     
     

@@ -209,6 +209,7 @@
 		87CBF3021D332E4500641884 /* NDUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CBF3011D332E4500641884 /* NDUserCell.m */; };
 		87CBF3041D335A0A00641884 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87CBF3031D335A0A00641884 /* AudioToolbox.framework */; };
 		87CBF3071D336DA100641884 /* NDStudentLineModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 87CBF3061D336DA100641884 /* NDStudentLineModel.m */; };
+		87D75B451D3DDF3C0024B631 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D75B441D3DDF3C0024B631 /* Reachability.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -594,6 +595,8 @@
 		87CBF3031D335A0A00641884 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		87CBF3051D336DA100641884 /* NDStudentLineModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NDStudentLineModel.h; sourceTree = "<group>"; };
 		87CBF3061D336DA100641884 /* NDStudentLineModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NDStudentLineModel.m; sourceTree = "<group>"; };
+		87D75B431D3DDF3C0024B631 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		87D75B441D3DDF3C0024B631 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		CCCACB19BDA3B3961C1DB1E0 /* Pods-NDBag.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NDBag.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NDBag/Pods-NDBag.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1567,6 +1570,8 @@
 		87A115D41D24C429005CB2A8 /* Vendors */ = {
 			isa = PBXGroup;
 			children = (
+				87D75B431D3DDF3C0024B631 /* Reachability.h */,
+				87D75B441D3DDF3C0024B631 /* Reachability.m */,
 				878BD5891D2B4D6D00B2EDC1 /* XMPP */,
 			);
 			path = Vendors;
@@ -2025,6 +2030,7 @@
 				878BD6F41D2B4D6D00B2EDC1 /* XMPPResourceMemoryStorageObject.m in Sources */,
 				878BD7191D2B4D6D00B2EDC1 /* XMPPvCardTempTel.m in Sources */,
 				878BD6FF1D2B4D6D00B2EDC1 /* XMPPRoom.xcdatamodeld in Sources */,
+				87D75B451D3DDF3C0024B631 /* Reachability.m in Sources */,
 				878BD7201D2B4D6D00B2EDC1 /* XMPPMessage+XEP_0066.m in Sources */,
 				878BD7321D2B4D6D00B2EDC1 /* XMPPMessage+XEP_0172.m in Sources */,
 				878BD70A1D2B4D6D00B2EDC1 /* XMPPMessage+XEP0045.m in Sources */,

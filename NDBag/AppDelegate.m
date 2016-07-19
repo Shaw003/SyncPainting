@@ -12,9 +12,12 @@
 
 @interface AppDelegate ()
 
+
+
 @end
 
 @implementation AppDelegate
+
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -24,6 +27,8 @@
 
     self.window.rootViewController = [NDLoginViewController new];
     [self.window makeKeyAndVisible];
+    
+       
     return YES;
 }
 
