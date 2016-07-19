@@ -30,7 +30,7 @@
 
 #define HOST_NAME @"of.ndmooc.com"
 #define CUSTOM_DOMAIN @"of.ndmooc.com"
-#define ROOM_JID @"xinjiejiaoyu2@conference.of.ndmooc.com"
+#define ROOM_JID @"testroom1@conference.of.ndmooc.com"
 #define CONFERENCE_ROOM_SERVER @"conference.of.ndmooc.com"
 
 #define IS_TEACHER [[NSUserDefaults standardUserDefaults] boolForKey:@"IS_TEACHER"]

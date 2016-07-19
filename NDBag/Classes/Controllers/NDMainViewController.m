@@ -1246,7 +1246,7 @@ static NSString * const reuseIdentifier = @"user";
     NSXMLElement *valueowners = [NSXMLElement elementWithName:@"value"];
     
     
-    [field addAttributeWithName:@"var" stringValue:@"muc#roomconfig_persistentroom"];  // 永久属性
+//    [field addAttributeWithName:@"var" stringValue:@"muc#roomconfig_persistentroom"];  // 永久属性
     [fieldowners addAttributeWithName:@"var" stringValue:@"muc#roomconfig_roomowners"];  // 谁创建的房间
     
     
