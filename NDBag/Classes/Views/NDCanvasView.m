@@ -141,11 +141,13 @@
         self.penIV = [UIImageView new];
         self.penIV.image = [UIImage imageNamed:@"cursor_pen"];
     }
-    if (CURRENT_DEVICE > 7) {
+    if (CURRENT_DEVICE == 8) {
         //120为状态栏高20＋蓝色顶部栏高44＋白色工具栏高56
         self.penIV.frame = CGRectMake(point.x, point.y + 20 + TOPVIEW_HEIGHT + TOOLBAR_HEIGHT, SIDE_LENGTH, SIDE_LENGTH);
-    } else {
+    } else if (CURRENT_DEVICE == 6) {
         self.penIV.frame = CGRectMake(point.x, point.y + 64, 30.f, 30.f);
+    } else if (CURRENT_DEVICE == 5) {
+        self.penIV.frame = CGRectMake(point.x, point.y + 60, 26.f, 26.f);
     }
     
     [[UIApplication sharedApplication].keyWindow addSubview:self.penIV];
@@ -170,10 +172,12 @@
     } else {
         [self generateStudentLineModelWithPoint:point currentTime:currentTime action:2];
     }
-    if (CURRENT_DEVICE > 7) {
+    if (CURRENT_DEVICE == 8) {
         self.penIV.frame = CGRectMake(point.x, point.y + 20 + TOPVIEW_HEIGHT + TOOLBAR_HEIGHT, SIDE_LENGTH, SIDE_LENGTH);
-    } else {
+    } else if (CURRENT_DEVICE == 6) {
         self.penIV.frame = CGRectMake(point.x, point.y + 64, 30.f, 30.f);
+    } else if (CURRENT_DEVICE == 5) {
+        self.penIV.frame = CGRectMake(point.x, point.y + 60, 26.f, 26.f);
     }
     
 }
@@ -217,11 +221,13 @@
     self.pathInfo.lineWidth = _currentSize;
     self.pathInfo.action = action;
     self.pathInfo.screenWidth = SCREEN_WIDTH;
-    if (CURRENT_DEVICE > 7) {
+    if (CURRENT_DEVICE ==8) {
         //120为状态栏高20＋蓝色顶部栏高44＋白色工具栏高56
         self.pathInfo.screenHeight = SCREEN_HEIGHT - 20 - TOPVIEW_HEIGHT - TOOLBAR_HEIGHT;
-    } else {
+    } else if (CURRENT_DEVICE == 6) {
         self.pathInfo.screenHeight = SCREEN_HEIGHT - 64;
+    } else if (CURRENT_DEVICE == 5) {
+        self.pathInfo.screenHeight = SCREEN_HEIGHT - 60;
     }
     
     if (!self.studentLine.pathInfos) {
@@ -244,11 +250,13 @@
     self.pathInfo.lineWidth = _currentSize;
     self.pathInfo.action = action;
     self.pathInfo.screenWidth = SCREEN_WIDTH;
-    if (CURRENT_DEVICE > 7) {
+    if (CURRENT_DEVICE == 8) {
         //120为状态栏高20＋蓝色顶部栏高44＋白色工具栏高56
         self.pathInfo.screenHeight = SCREEN_HEIGHT - 20 - TOPVIEW_HEIGHT - TOOLBAR_HEIGHT;
-    } else {
+    } else if (CURRENT_DEVICE == 6) {
         self.pathInfo.screenHeight = SCREEN_HEIGHT - 64;
+    } else if (CURRENT_DEVICE == 5) {
+        self.pathInfo.screenHeight = SCREEN_HEIGHT - 60;
     }
     
     self.currentLine.pathInfo = self.pathInfo;
@@ -359,11 +367,13 @@
         self.penIV.image = [UIImage imageNamed:@"cursor_pen"];
         [[UIApplication sharedApplication].keyWindow addSubview:self.penIV];
     }
-    if (CURRENT_DEVICE > 7) {
+    if (CURRENT_DEVICE == 8) {
         //120为状态栏高20＋蓝色顶部栏高44＋白色工具栏高56
         self.penIV.frame = CGRectMake(point.x, point.y + 20 + TOPVIEW_HEIGHT + TOOLBAR_HEIGHT, SIDE_LENGTH, SIDE_LENGTH);
-    } else {
+    } else if (CURRENT_DEVICE == 6) {
         self.penIV.frame = CGRectMake(point.x, point.y + 64, 30.f, 30.f);
+    } else if (CURRENT_DEVICE == 5) {
+        self.penIV.frame = CGRectMake(point.x, point.y + 60, 26.f, 26.f);
     }
     
     
@@ -380,12 +390,14 @@
     [line.points addObject:NSStringFromCGPoint(point)];
     [self setNeedsDisplay];
     
-    if (CURRENT_DEVICE > 7) {
+    if (CURRENT_DEVICE == 8) {
         //120为状态栏高20＋蓝色顶部栏高44＋白色工具栏高56
         self.penIV.frame = CGRectMake(point.x, point.y + 20 + TOPVIEW_HEIGHT + TOOLBAR_HEIGHT, SIDE_LENGTH, SIDE_LENGTH);
-    } else {
+    } else if (CURRENT_DEVICE == 6) {
 
         self.penIV.frame = CGRectMake(point.x, point.y + 64, 30.f, 30.f);
+    } else if (CURRENT_DEVICE == 5) {
+        self.penIV.frame = CGRectMake(point.x, point.y + 60, 26.f, 26.f);
     }
     
 }
@@ -494,9 +506,22 @@
     CGFloat size;
     //没接收到值
     if (line.size > 0) {
-        size = line.size;
+        if (CURRENT_DEVICE == 5) {
+            size = (line.size / 5) * 3;
+        } else if (CURRENT_DEVICE == 6) {
+            size = (line.size / 5) * 4;
+        } else if (CURRENT_DEVICE == 8) {
+            size = line.size;
+        }
     } else {
-        size = 5.f;
+        if (CURRENT_DEVICE == 5) {
+            size = 3.f;
+        } else if (CURRENT_DEVICE == 6) {
+            size = 4.f;
+        } else if (CURRENT_DEVICE == 8) {
+            size = 5.f;
+        }
+        
     }
     [color set];
     // 创建一个贝塞尔路径

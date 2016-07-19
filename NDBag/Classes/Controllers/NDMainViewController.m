@@ -195,8 +195,17 @@ static NSString * const reuseIdentifier = @"user";
         [self.view bringSubviewToFront:_bottomView];
         [_bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.leading.trailing.equalTo(_backgroundIV);
-            make.top.equalTo(_backgroundIV.mas_bottom).offset(-28);
-            make.height.equalTo(@150);
+            if (CURRENT_DEVICE == 8) {
+                make.top.equalTo(_backgroundIV.mas_bottom).offset(-28);
+                make.height.equalTo(@150);
+            } else if (CURRENT_DEVICE == 6) {
+                make.top.equalTo(_backgroundIV.mas_bottom).offset(-22);
+                make.height.equalTo(@120);
+            } else if (CURRENT_DEVICE == 5) {
+                make.top.equalTo(_backgroundIV.mas_bottom).offset(-18);
+                make.height.equalTo(@110);
+            }
+            
             
         }];
         
@@ -206,8 +215,14 @@ static NSString * const reuseIdentifier = @"user";
         [_userListBtn setImage:[UIImage imageNamed:@"button_arrows2"] forState:UIControlStateNormal];
         [_userListBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.leading.trailing.top.equalTo(_bottomView);
+            if (CURRENT_DEVICE == 8) {
+                make.height.equalTo(@28);
+            } else if (CURRENT_DEVICE == 6) {
+                make.height.equalTo(@22);
+            } else if (CURRENT_DEVICE == 5) {
+                make.height.equalTo(@18);
+            }
             
-            make.height.equalTo(@28);
             
         }];
         [_userListBtn addTarget:self action:@selector(btnClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -216,10 +231,20 @@ static NSString * const reuseIdentifier = @"user";
         
         UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
         [flowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];//设置其布局方向
+        if (CURRENT_DEVICE == 8) {
+            [flowLayout setItemSize:CGSizeMake(98.f, 98.f)];//设置cell的尺寸
+            flowLayout.sectionInset = UIEdgeInsetsMake(10.f, 12.f, 14.f, 12.f);//设置其边界
+            _userCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(4.f, 28.f, SCREEN_WIDTH, 122.f) collectionViewLayout:flowLayout];
+        } else if (CURRENT_DEVICE == 6) {
+            [flowLayout setItemSize:CGSizeMake(78.f, 78.f)];//设置cell的尺寸
+            flowLayout.sectionInset = UIEdgeInsetsMake(10.f, 12.f, 10.f, 12.f);//设置其边界
+            _userCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(4.f, 34.f, SCREEN_WIDTH, 98.f) collectionViewLayout:flowLayout];
+        } else if (CURRENT_DEVICE == 5) {
+            [flowLayout setItemSize:CGSizeMake(68.f, 68.f)];//设置cell的尺寸
+            flowLayout.sectionInset = UIEdgeInsetsMake(10.f, 12.f, 20.f, 12.f);//设置其边界
+            _userCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(4.f, 0.f, SCREEN_WIDTH, 98.f) collectionViewLayout:flowLayout];
+        }
         
-        [flowLayout setItemSize:CGSizeMake(98.f, 98.f)];//设置cell的尺寸
-        flowLayout.sectionInset = UIEdgeInsetsMake(10.f, 12.f, 14.f, 12.f);//设置其边界
-        _userCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(4.f, 28.f, SCREEN_WIDTH, 122.f) collectionViewLayout:flowLayout];
         
         _userCollectionView.backgroundColor = [UIColor clearColor];
         [_userCollectionView setCollectionViewLayout:flowLayout];
@@ -227,7 +252,14 @@ static NSString * const reuseIdentifier = @"user";
         [_userCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.leading.trailing.equalTo(_bottomView);
             make.top.equalTo(_userListBtn.mas_bottom);
-            make.height.equalTo(@122);
+            if (CURRENT_DEVICE == 8) {
+                make.height.equalTo(@122);
+            } else if (CURRENT_DEVICE == 6) {
+                make.height.equalTo(@98);
+            } else if (CURRENT_DEVICE == 5) {
+                make.height.equalTo(@98);
+            }
+            
         }];
         _userCollectionView.delegate = self;
         _userCollectionView.dataSource = self;
@@ -243,9 +275,9 @@ static NSString * const reuseIdentifier = @"user";
     _backgroundIV.image = BACKGROUND_IMAGE;
     [self.view addSubview:_backgroundIV];
     [_backgroundIV mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.edges.mas_equalTo(UIEdgeInsetsMake(20, 0, 0, 0));
-        } else {
+        } else if (CURRENT_DEVICE >= 4 && CURRENT_DEVICE < 8) {
             make.edges.mas_equalTo(UIEdgeInsetsMake(0, 0, 0, 0));
         }
     }];
@@ -256,10 +288,12 @@ static NSString * const reuseIdentifier = @"user";
     self.canvasView = [[NDCanvasView alloc] init];
     [_backgroundIV addSubview:self.canvasView];
     [self.canvasView mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.edges.mas_equalTo(UIEdgeInsetsMake(100, 0, 0, 0));
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.edges.mas_equalTo(UIEdgeInsetsMake(64, 0, 0, 0));
+        } else if (CURRENT_DEVICE == 5) {
+            make.edges.mas_equalTo(UIEdgeInsetsMake(60, 0, 0, 0));
         }
     }];
     self.canvasView.backgroundColor = [UIColor clearColor];
@@ -283,7 +317,14 @@ static NSString * const reuseIdentifier = @"user";
     _topView.backgroundColor = ColorFromHex(0x1d95d4);
     [_topView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.trailing.top.equalTo(_backgroundIV);
-        make.height.mas_equalTo(TOPVIEW_HEIGHT);
+        if (CURRENT_DEVICE == 8) {
+            make.height.mas_equalTo(TOPVIEW_HEIGHT);
+        } else if (CURRENT_DEVICE == 6) {
+            make.height.mas_equalTo(TOPVIEW_HEIGHT);
+        } else if (CURRENT_DEVICE == 5) {
+            make.height.mas_equalTo(30);
+        }
+        
     }];
     
     _clearBtn = [UIButton new];
@@ -293,12 +334,15 @@ static NSString * const reuseIdentifier = @"user";
     [_clearBtn setImage:[UIImage imageNamed:@"header_icon-_-delete2"] forState:UIControlStateHighlighted];
     [_clearBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(_topView);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.leading.equalTo(@16);
             make.width.height.mas_equalTo(BTN_SIDELENGTH);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.leading.equalTo(@10);
             make.width.height.mas_equalTo(34);
+        } else if (CURRENT_DEVICE == 5) {
+            make.leading.equalTo(@8);
+            make.width.height.mas_equalTo(30);
         }
         
     }];
@@ -310,10 +354,12 @@ static NSString * const reuseIdentifier = @"user";
     [_saveBtn setImage:[UIImage imageNamed:@"header_icon_save2"] forState:UIControlStateHighlighted];
     [_saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.height.width.equalTo(_clearBtn);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.trailing.equalTo(_topView).offset(-16);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.trailing.equalTo(_topView).offset(-10);
+        } else if (CURRENT_DEVICE == 5) {
+            make.trailing.equalTo(_topView).offset(-8);
         }
         
     }];
@@ -325,10 +371,12 @@ static NSString * const reuseIdentifier = @"user";
     [_netBtn setImage:[UIImage imageNamed:@"header_icon_share2"] forState:UIControlStateSelected];
     [_netBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.height.width.equalTo(_clearBtn);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.trailing.equalTo(_saveBtn.mas_leading).offset(-26);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.trailing.equalTo(_saveBtn.mas_leading).offset(-16);
+        } else if (CURRENT_DEVICE == 5) {
+            make.trailing.equalTo(_saveBtn.mas_leading).offset(-8);
         }
         
     }];
@@ -340,10 +388,12 @@ static NSString * const reuseIdentifier = @"user";
     [_switchUserBtn setImage:[UIImage imageNamed:@"header_icon-_user2"] forState:UIControlStateHighlighted];
     [_switchUserBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.height.width.equalTo(_clearBtn);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.trailing.equalTo(_netBtn.mas_leading).offset(-26);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.trailing.equalTo(_netBtn.mas_leading).offset(-16);
+        } else if (CURRENT_DEVICE == 5) {
+            make.trailing.equalTo(_netBtn.mas_leading).offset(-8);
         }
     }];
     
@@ -367,9 +417,11 @@ static NSString * const reuseIdentifier = @"user";
     [_toolBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.trailing.equalTo(_topView);
         make.top.equalTo(_topView.mas_bottom);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.height.mas_equalTo(TOOLBAR_HEIGHT);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
+            make.height.mas_equalTo(30);
+        } else if (CURRENT_DEVICE == 5) {
             make.height.mas_equalTo(30);
         }
         
@@ -381,11 +433,14 @@ static NSString * const reuseIdentifier = @"user";
     [_trackColorBtn setImage:[UIImage imageNamed:@"icon_straw2"] forState:UIControlStateHighlighted];
     [_trackColorBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.equalTo(_toolBar);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.leading.equalTo(_toolBar).offset(22);
             make.height.width.mas_equalTo(BTN_SIDELENGTH);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.leading.equalTo(_toolBar).offset(12);
+            make.height.width.mas_equalTo(30);
+        } else if (CURRENT_DEVICE == 5) {
+            make.leading.equalTo(_toolBar).offset(10);
             make.height.width.mas_equalTo(30);
         }
         
@@ -398,10 +453,12 @@ static NSString * const reuseIdentifier = @"user";
     [_penSizeBtn setImage:[UIImage imageNamed:@"icon_pen2"] forState:UIControlStateHighlighted];
     [_penSizeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.width.height.equalTo(_trackColorBtn);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.leading.equalTo(_trackColorBtn.mas_trailing).offset(26);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.leading.equalTo(_trackColorBtn.mas_trailing).offset(16);
+        } else if (CURRENT_DEVICE == 5) {
+            make.leading.equalTo(_trackColorBtn.mas_trailing).offset(8);
         }
         
     }];
@@ -413,10 +470,12 @@ static NSString * const reuseIdentifier = @"user";
     [_undoBtn setImage:[UIImage imageNamed:@"icon_return2"] forState:UIControlStateHighlighted];
     [_undoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.width.height.equalTo(_trackColorBtn);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.leading.equalTo(_penSizeBtn.mas_trailing).offset(26);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.leading.equalTo(_penSizeBtn.mas_trailing).offset(16);
+        } else if (CURRENT_DEVICE == 5) {
+            make.leading.equalTo(_penSizeBtn.mas_trailing).offset(8);
         }
         
     }];
@@ -443,31 +502,38 @@ static NSString * const reuseIdentifier = @"user";
     _alertView.image = [UIImage imageNamed:@"pop_bg"];
     [_alertView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.equalTo(self.view);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.height.width.equalTo(_alertView);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.width.mas_equalTo(428*.6f);
             make.height.mas_equalTo(250*.6f);
+        } else if (CURRENT_DEVICE == 5) {
+            make.width.mas_equalTo(428*.5f);
+            make.height.mas_equalTo(250*.5f);
         }
         
     }];
     UILabel *label = [UILabel new];
     [_alertView addSubview:label];
     label.text = @"是否清空面板？";
-    if (CURRENT_DEVICE > 7) {
+    if (CURRENT_DEVICE == 8) {
         label.font = [UIFont systemFontOfSize:26.f];
-    } else {
+    } else if (CURRENT_DEVICE == 6) {
         label.font = [UIFont systemFontOfSize:18.f];
+    } else if (CURRENT_DEVICE == 5) {
+        label.font = [UIFont systemFontOfSize:16.f];
     }
     
     label.textColor = ColorFromHex(0x3a3a3a);
     label.textAlignment = NSTextAlignmentCenter;
     [label mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(_alertView);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.top.equalTo(_alertView).offset(100);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.top.equalTo(_alertView).offset(60);
+        } else if (CURRENT_DEVICE == 5) {
+            make.top.equalTo(_alertView).offset(50);
         }
         
     }];
@@ -478,13 +544,18 @@ static NSString * const reuseIdentifier = @"user";
     [confirmBtn setImage:[UIImage imageNamed:@"pop_button_yes2"] forState:UIControlStateHighlighted];
     [_alertView addSubview:confirmBtn];
     [confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.width.height.equalTo(confirmBtn);
             make.trailing.equalTo(_alertView.mas_centerX).offset(-24);
             make.top.equalTo(label.mas_bottom).offset(52);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.width.mas_equalTo(140*.6f);
             make.height.mas_equalTo(42*.6f);
+            make.trailing.equalTo(_alertView.mas_centerX).offset(-24);
+            make.top.equalTo(label.mas_bottom).offset(26);
+        } else if (CURRENT_DEVICE == 5) {
+            make.width.mas_equalTo(140*.5f);
+            make.height.mas_equalTo(42*.5f);
             make.trailing.equalTo(_alertView.mas_centerX).offset(-24);
             make.top.equalTo(label.mas_bottom).offset(26);
         }
@@ -571,7 +642,14 @@ static NSString * const reuseIdentifier = @"user";
                 [UIView animateWithDuration:.4f animations:^{
                     [_userListBtn setImage:[UIImage imageNamed:@"button_arrows2"] forState:UIControlStateNormal];
                     [_bottomView mas_updateConstraints:^(MASConstraintMaker *make) {
-                        make.top.equalTo(_backgroundIV.mas_bottom).offset(-28);
+                        if (CURRENT_DEVICE == 8) {
+                            make.top.equalTo(_backgroundIV.mas_bottom).offset(-28);
+                        } else if (CURRENT_DEVICE == 6) {
+                            make.top.equalTo(_backgroundIV.mas_bottom).offset(-22);
+                        } else if (CURRENT_DEVICE == 5) {
+                            make.top.equalTo(_backgroundIV.mas_bottom).offset(-18);
+                        }
+                        
                     }];
                     [_bottomView layoutIfNeeded];
                 }];
@@ -579,7 +657,14 @@ static NSString * const reuseIdentifier = @"user";
                 [UIView animateWithDuration:.4f animations:^{
                     [_userListBtn setImage:[UIImage imageNamed:@"button_arrows1"] forState:UIControlStateNormal];
                     [_bottomView mas_updateConstraints:^(MASConstraintMaker *make) {
-                        make.top.equalTo(_backgroundIV.mas_bottom).offset(-150);
+                        if (CURRENT_DEVICE == 8) {
+                            make.top.equalTo(_backgroundIV.mas_bottom).offset(-150);
+                        } else if (CURRENT_DEVICE == 6) {
+                            make.top.equalTo(_backgroundIV.mas_bottom).offset(-120);
+                        } else if (CURRENT_DEVICE == 5) {
+                            make.top.equalTo(_backgroundIV.mas_bottom).offset(-110);
+                        }
+                        
                     }];
                     [_bottomView layoutIfNeeded];
                 }];
@@ -649,15 +734,20 @@ static NSString * const reuseIdentifier = @"user";
     _penSizePickerIV.image = [UIImage imageNamed:@"pop_pen_bg"];
     [[UIApplication sharedApplication].keyWindow addSubview:_penSizePickerIV];
     [_penSizePickerIV mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.top.equalTo(_toolBar.mas_bottom).offset(6);
             make.leading.equalTo(self.canvasView).offset(100);
             make.height.width.equalTo(_penSizePickerIV);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.top.equalTo(_toolBar.mas_bottom).offset(6);
             make.leading.equalTo(self.canvasView).offset(80);
             make.width.mas_equalTo(322*.55f);
             make.height.mas_equalTo(462*.55f);
+        } else if (CURRENT_DEVICE == 5) {
+            make.top.equalTo(_toolBar.mas_bottom).offset(6);
+            make.leading.equalTo(self.canvasView).offset(80);
+            make.width.mas_equalTo(322*.35f);
+            make.height.mas_equalTo(462*.35f);
         }
         
     }];
@@ -665,21 +755,26 @@ static NSString * const reuseIdentifier = @"user";
     for (int i = 1; i <= 6; i++) {
         UILabel *label = [UILabel new];
         label.text = [NSString stringWithFormat:@"%d", i * 5];
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             label.font = [UIFont systemFontOfSize:22.f];
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             label.font = [UIFont systemFontOfSize:16.f];
+        } else if (CURRENT_DEVICE == 5) {
+            label.font = [UIFont systemFontOfSize:12.f];
         }
         
         label.textColor = ColorFromHex(0x2c2c2c);
         [_penSizePickerIV addSubview:label];
         [label mas_makeConstraints:^(MASConstraintMaker *make) {
-            if (CURRENT_DEVICE > 7) {
+            if (CURRENT_DEVICE == 8) {
                 make.top.mas_equalTo(20 + 56 * i);
                 make.leading.equalTo(_penSizePickerIV).offset(16);
-            } else {
+            } else if (CURRENT_DEVICE == 6) {
                 make.top.mas_equalTo(7 + 31 * i);
                 make.leading.equalTo(_penSizePickerIV).offset(10);
+            } else if (CURRENT_DEVICE == 5) {
+                make.top.mas_equalTo(3 + 19.5 * i);
+                make.leading.equalTo(_penSizePickerIV).offset(8);
             }
             
         }];
@@ -702,12 +797,15 @@ static NSString * const reuseIdentifier = @"user";
         [checkbox setImage:[UIImage imageNamed:@"radio4"] forState:UIControlStateSelected];
         [checkbox mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerY.equalTo(label);
-            if (CURRENT_DEVICE > 7) {
+            if (CURRENT_DEVICE == 8) {
                 make.width.height.mas_equalTo(20);
                 make.trailing.equalTo(_penSizePickerIV).offset(-26);
-            } else {
+            } else if (CURRENT_DEVICE == 6) {
                 make.width.height.mas_equalTo(16);
                 make.trailing.equalTo(_penSizePickerIV).offset(-10);
+            } else if (CURRENT_DEVICE == 5) {
+                make.width.height.mas_equalTo(12);
+                make.trailing.equalTo(_penSizePickerIV).offset(-8);
             }
             
         }];
@@ -721,11 +819,17 @@ static NSString * const reuseIdentifier = @"user";
             [_penSizePickerIV addSubview:cancelBtn];
             [cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.centerX.equalTo(_penSizePickerIV);
-                make.width.height.equalTo(cancelBtn);
-                if (CURRENT_DEVICE > 7) {
+                
+                if (CURRENT_DEVICE == 8) {
                     make.top.equalTo(label.mas_centerY).offset(46);
-                } else {
+                    make.width.height.equalTo(cancelBtn);
+                } else if (CURRENT_DEVICE == 6) {
                     make.top.equalTo(label.mas_centerY).offset(22);
+                    make.width.height.equalTo(cancelBtn);
+                } else if (CURRENT_DEVICE == 5) {
+                    make.top.equalTo(label.mas_centerY).offset(18);
+                    make.width.mas_equalTo(90*.45f);
+                    make.height.mas_equalTo(44*.45f);
                 }
                 
             }];
@@ -880,124 +984,160 @@ static NSString * const reuseIdentifier = @"user";
     NSDictionary *dict = jsonDic[@"msg"];
 #pragma mark 屏蔽自己发的消息
     if (![occupantJID.resource isEqualToString:self.nickName]) {//接收消息时屏蔽自己
-#pragma mark 教师画图功能
+
         if ([function isEqualToString:@"setPathInfoByTeacher"]) {//教师画图
             
-            NDTeacherLineModel *lineModel = [NDTeacherLineModel mj_objectWithKeyValues:dict];
-            [self.canvasView setValue:lineModel forKey:@"receivedLine"];
-#pragma mark 学生画图功能
+            [self teacherDrawWith:dict];
+
         } else if ([function isEqualToString:@"setPathInfoByStudent"]) {//学生画图
             
-            //先清空别人画的
-            [self.canvasView.receivedStudentStrokesArr removeAllObjects];
+            [self studentDrawWith:dict];
             
-            [self.canvasView setNeedsDisplay];
-            
-            NDStudentLineModel *lineModel = [NDStudentLineModel mj_objectWithKeyValues:dict];
-            
-            self.canvasView.tempLine = lineModel;
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"needDraw" object:nil];
-#pragma mark 新的学生用户加入刷新学生列表功能
         } else if ([function isEqualToString:@"user_join"]) {//有用户加入了
             LogRed(@"occupantJID.resource = %@\n", occupantJID.resource);
             
-            if (IS_TEACHER) {//如果接收到的消息不是自己发出的，且自己是老师
-                
-                NSString *userIconString = jsonDic[@"msg"][@"user"][@"userIcon"];
-                NDUser *user = [NDUser new];
-                user.userID = occupantJID.resource;
-                user.userIcon = userIconString;
-                if (!self.allStudentsArray.count) {
-                    
-                    [self.allStudentsArray addObject:user];
-                    //刷新学生列表屏幕显示
-                    [self.userCollectionView reloadData];
-                } else {
-                    for (int i = 0; i < self.allStudentsArray.count; i++) {
-                        NDUser *existedUser = self.allStudentsArray[i];
-                        if (![existedUser.userID isEqualToString:user.userID]) {
-                            [self.allStudentsArray addObject:user];
-                            //刷新学生列表屏幕显示
-                            [self.userCollectionView reloadData];
-                        }
-                    }
-                }
-                
-            }
-#pragma mark 清空屏幕功能
+            [self newStudentJoinedTheRoomWith:jsonDic student:occupantJID];
+
         } else if ([function isEqualToString:@"ClearPaint"]) {//清空屏幕
-            [self.canvasView.receivedStrokesArr removeAllObjects];
-            [self.canvasView.strokesArr removeAllObjects];
-            [self.canvasView.receivedStudentStrokesArr removeAllObjects];
-            [self.canvasView.studentLine.pathInfos removeAllObjects];
-            self.canvasView.tempLine = nil;
-            [self.canvasView setNeedsDisplay];
-#pragma mark 教师上线
-        } else if ([function isEqualToString:@"Online"]) {//如果教师上线了，再次发送学生信息
-            if (!IS_TEACHER) {
-                [self sendStudentInfo];
-            }
             
-#pragma mark 教师点名功能
+            [self clearScreen];
+            
+
+        } else if ([function isEqualToString:@"Online"]) {//如果教师上线了，再次发送学生信息
+            
+            [self teacherOnline];
+
         } else if ([function isEqualToString:@"Rollcall"]) {//老师点名了
             if ([userID isEqualToString:self.nickName]) {//点的是自己
-                if (!TARGET_IPHONE_SIMULATOR) {
-                    //iPad 没有震动功能，此行代码在iPad上不起作用
-                    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-                    //发出声音
-                    AVSpeechUtterance *utterance = [AVSpeechUtterance speechUtteranceWithString:@"您的笔迹已被同步"];
-                    utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"zh-CN"];
-                    utterance.rate = 0.4f;
-                    [self.synthesizer speakUtterance:utterance];
-                }
                 
-                [self.canvasView.receivedStudentStrokesArr removeAllObjects];
-                [self.canvasView setNeedsDisplay];
-                
-                if (self.canvasView.studentLine) {//有值的话才会发送消息
-                    NSDictionary *dic = [self.canvasView.studentLine.mj_keyValues copy];
-                    NSDictionary *msgDic = [NSDictionary dictionaryWithObject:dic forKey:@"msg"];
-                    NSError *error = nil;
-                    NSData *msgData = [NSJSONSerialization dataWithJSONObject:msgDic options:NSJSONWritingPrettyPrinted error:&error];
-                    NSString *jsonString = [[NSString alloc] initWithData:msgData encoding:NSUTF8StringEncoding];
-                    
-                    LogBlue(@"%@", jsonString);
-                    [self.xmppRoom sendMessageWithBody:jsonString];
-                }
-                
+                [self teacherRollCall];
             }
-            
-#pragma mark 教师撤销回退功能
+
         } else if ([function isEqualToString:@"Undo"]) {
-            [self.canvasView.receivedStrokesArr removeLastObject];
-            [self.canvasView setNeedsDisplay];
-#pragma mark 多名教师登录判断
+            
+            [self teacherUndo];
+
         } else if ([function isEqualToString:@"isExisted"] && IS_TEACHER && !self.isObserver) {//如果收到了有教师进入聊天室的消息且自己是老师且自己不是观察者
             NSString *time = dict[@"currentTime"];
             
-            if (![self.tempTime isEqualToString:time]) {//如果这次收到的时间跟上次不一样，就把自己的时间发出去
-                [self sendCheckoutMessageWithTime:self.joinedTime];
-                self.tempTime = time;
-            } else {
-                self.tempTime = nil;
-            }
-            
-            long otherTeacherJoinedTime = [time longLongValue];
-            long myJoinedTime = [self.joinedTime longLongValue];
-            LogRed(@"其他老师加入房间的时间为%ld,我自己是老师加入房间的时间是%ld", otherTeacherJoinedTime, myJoinedTime);
-            
-            if (otherTeacherJoinedTime < myJoinedTime) {//别的老师先加入的房间，我是老师后加入的，就变成观察者模式
-                [MBProgressHUD hideHUD];
-                [MBProgressHUD showError:@"房间里存在多个教师，您已成为观察者"];
-                _bottomView.hidden = YES;
-                [self btnEnable:NO];
-            }
-
+            [self moreThanOneTeacher:time];
+           
         }
         
     }
     
+}
+#pragma mark 教师画图功能
+- (void)teacherDrawWith:(NSDictionary *)dict {
+    NDTeacherLineModel *lineModel = [NDTeacherLineModel mj_objectWithKeyValues:dict];
+    [self.canvasView setValue:lineModel forKey:@"receivedLine"];
+}
+#pragma mark 学生画图功能
+- (void)studentDrawWith:(NSDictionary *)dict {
+    //先清空别人画的
+    [self.canvasView.receivedStudentStrokesArr removeAllObjects];
+    
+    [self.canvasView setNeedsDisplay];
+    
+    NDStudentLineModel *lineModel = [NDStudentLineModel mj_objectWithKeyValues:dict];
+    
+    self.canvasView.tempLine = lineModel;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"needDraw" object:nil];
+
+}
+#pragma mark 新的学生用户加入刷新学生列表功能
+- (void)newStudentJoinedTheRoomWith:(NSDictionary *)jsonDic student:(XMPPJID *)occupantJID {
+    if (IS_TEACHER) {//如果接收到的消息不是自己发出的，且自己是老师
+        
+        NSString *userIconString = jsonDic[@"msg"][@"user"][@"userIcon"];
+        NDUser *user = [NDUser new];
+        user.userID = occupantJID.resource;
+        user.userIcon = userIconString;
+        if (!self.allStudentsArray.count) {
+            
+            [self.allStudentsArray addObject:user];
+            //刷新学生列表屏幕显示
+            [self.userCollectionView reloadData];
+        } else {
+            for (int i = 0; i < self.allStudentsArray.count; i++) {
+                NDUser *existedUser = self.allStudentsArray[i];
+                if (![existedUser.userID isEqualToString:user.userID]) {
+                    [self.allStudentsArray addObject:user];
+                    //刷新学生列表屏幕显示
+                    [self.userCollectionView reloadData];
+                }
+            }
+        }
+        
+    }
+}
+#pragma mark 清空屏幕功能
+- (void)clearScreen {
+    [self.canvasView.receivedStrokesArr removeAllObjects];
+    [self.canvasView.strokesArr removeAllObjects];
+    [self.canvasView.receivedStudentStrokesArr removeAllObjects];
+    [self.canvasView.studentLine.pathInfos removeAllObjects];
+    self.canvasView.tempLine = nil;
+    [self.canvasView setNeedsDisplay];
+}
+#pragma mark 教师上线
+- (void)teacherOnline {
+    if (!IS_TEACHER) {
+        [self sendStudentInfo];
+    }
+}
+#pragma mark 教师点名功能
+- (void)teacherRollCall {
+    if (!TARGET_IPHONE_SIMULATOR) {
+        //iPad 没有震动功能，此行代码在iPad上不起作用
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+        //发出声音
+        AVSpeechUtterance *utterance = [AVSpeechUtterance speechUtteranceWithString:@"您的笔迹已被同步"];
+        utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"zh-CN"];
+        utterance.rate = 0.4f;
+        [self.synthesizer speakUtterance:utterance];
+    }
+    
+    [self.canvasView.receivedStudentStrokesArr removeAllObjects];
+    [self.canvasView setNeedsDisplay];
+    
+    if (self.canvasView.studentLine) {//有值的话才会发送消息
+        NSDictionary *dic = [self.canvasView.studentLine.mj_keyValues copy];
+        NSDictionary *msgDic = [NSDictionary dictionaryWithObject:dic forKey:@"msg"];
+        NSError *error = nil;
+        NSData *msgData = [NSJSONSerialization dataWithJSONObject:msgDic options:NSJSONWritingPrettyPrinted error:&error];
+        NSString *jsonString = [[NSString alloc] initWithData:msgData encoding:NSUTF8StringEncoding];
+        
+        LogBlue(@"%@", jsonString);
+        [self.xmppRoom sendMessageWithBody:jsonString];
+    }
+
+}
+#pragma mark 教师撤销回退功能
+- (void)teacherUndo {
+    [self.canvasView.receivedStrokesArr removeLastObject];
+    [self.canvasView setNeedsDisplay];
+}
+#pragma mark 多名教师登录判断
+- (void)moreThanOneTeacher:(NSString *)time {
+    if (![self.tempTime isEqualToString:time]) {//如果这次收到的时间跟上次不一样，就把自己的时间发出去
+        [self sendCheckoutMessageWithTime:self.joinedTime];
+        self.tempTime = time;
+    } else {
+        self.tempTime = nil;
+    }
+    
+    long otherTeacherJoinedTime = [time longLongValue];
+    long myJoinedTime = [self.joinedTime longLongValue];
+    LogRed(@"其他老师加入房间的时间为%ld,我自己是老师加入房间的时间是%ld", otherTeacherJoinedTime, myJoinedTime);
+    
+    if (otherTeacherJoinedTime < myJoinedTime) {//别的老师先加入的房间，我是老师后加入的，就变成观察者模式
+        [MBProgressHUD hideHUD];
+        [MBProgressHUD showError:@"房间里存在多个教师，您已成为观察者"];
+        _bottomView.hidden = YES;
+        [self btnEnable:NO];
+    }
 }
 
 - (void)sendCheckoutMessageWithTime:(NSString *)time {
@@ -1035,7 +1175,7 @@ static NSString * const reuseIdentifier = @"user";
     NSXMLElement *valueowners = [NSXMLElement elementWithName:@"value"];
     
     
-    [field addAttributeWithName:@"var" stringValue:@"muc#roomconfig_persistentroom"];  // 永久属性
+//    [field addAttributeWithName:@"var" stringValue:@"muc#roomconfig_persistentroom"];  // 永久属性
     [fieldowners addAttributeWithName:@"var" stringValue:@"muc#roomconfig_roomowners"];  // 谁创建的房间
     
     
@@ -1159,6 +1299,8 @@ static NSString * const reuseIdentifier = @"user";
     [super viewWillDisappear:animated];
     
     [self logoutXMPP];
+    
+    [self clearScreen];
 }
 //退出聊天室的方法
 - (void)logoutXMPP {
@@ -1202,6 +1344,7 @@ static NSString * const reuseIdentifier = @"user";
 
 {
     return self.allStudentsArray.count;
+//    return 40;
 }
 
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -1216,6 +1359,8 @@ static NSString * const reuseIdentifier = @"user";
     NDUserCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     NDUser *user = self.allStudentsArray[indexPath.row];
     cell.user = user;
+    //测试
+//    cell.backgroundColor = [UIColor redColor];
     return cell;
 }
 

@@ -29,8 +29,17 @@
 //    //结束
     [self.backgroundView addSubview:self.userAvatarIV];
     [self.userAvatarIV mas_makeConstraints:^(MASConstraintMaker *make) {
+        
         make.center.equalTo(self);
-        make.width.height.equalTo(@86);
+        
+        if (CURRENT_DEVICE == 8) {
+            make.width.height.equalTo(@86);
+        } else if (CURRENT_DEVICE == 6) {
+            make.width.height.equalTo(@70);
+        } else if (CURRENT_DEVICE == 5) {
+            make.width.height.equalTo(@60);
+        }
+        
     }];
 }
 

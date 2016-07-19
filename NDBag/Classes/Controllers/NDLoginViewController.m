@@ -82,9 +82,9 @@ singleton_implementation(NDLoginViewController);
     _backgroundIV.image = BACKGROUND_IMAGE;
     [self.view addSubview:_backgroundIV];
     [_backgroundIV mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.edges.mas_equalTo(UIEdgeInsetsMake(20, 0, 0, 0));
-        } else {
+        } else if (CURRENT_DEVICE >= 4 && CURRENT_DEVICE < 8){
             make.edges.mas_equalTo(UIEdgeInsetsMake(0, 0, 0, 0));
         }
     }];
@@ -100,10 +100,12 @@ singleton_implementation(NDLoginViewController);
     titleLabel.backgroundColor = ColorFromHex(0x1d95d4);
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.trailing.top.equalTo(_backgroundIV);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.height.mas_equalTo(TOPVIEW_HEIGHT);
-        } else {
+        } else if (CURRENT_DEVICE == 6){
             make.height.mas_equalTo(34);
+        } else if (CURRENT_DEVICE == 5) {
+            make.height.mas_equalTo(30);
         }
         
     }];
@@ -113,14 +115,18 @@ singleton_implementation(NDLoginViewController);
     inputBg.image = [UIImage imageNamed:@"input_bg"];
     [inputBg mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(_backgroundIV);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.top.equalTo(titleLabel.mas_bottom).offset(60);
             make.width.mas_equalTo(324);
             make.height.equalTo(@52);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.top.equalTo(titleLabel.mas_bottom).offset(25);
             make.width.mas_equalTo(284);
             make.height.equalTo(@40);
+        } else if (CURRENT_DEVICE == 5) {
+            make.top.equalTo(titleLabel.mas_bottom).offset(20);
+            make.width.mas_equalTo(264);
+            make.height.equalTo(@30);
         }
     }];
     _nameTF = [UITextField new];
@@ -130,10 +136,12 @@ singleton_implementation(NDLoginViewController);
     [_nameTF mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(inputBg).offset(10);
         make.centerY.height.equalTo(inputBg);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.width.mas_equalTo(314);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.width.mas_equalTo(274);
+        } else if (CURRENT_DEVICE == 5) {
+            make.width.mas_equalTo(264);
         }
     }];
     
@@ -152,14 +160,18 @@ singleton_implementation(NDLoginViewController);
     _studentCheckbox.tag = 101;
     [_backgroundIV addSubview:_studentCheckbox];
     [_studentCheckbox mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.leading.mas_equalTo(400);
             make.top.equalTo(_nameTF.mas_bottom).offset(26);
             make.width.height.mas_equalTo(CHECKBOX_SIDELENGTH);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.leading.mas_equalTo(235);
             make.top.equalTo(_nameTF.mas_bottom).offset(16);
             make.width.height.mas_equalTo(28);
+        } else if (CURRENT_DEVICE == 5) {
+            make.leading.mas_equalTo(195);
+            make.top.equalTo(_nameTF.mas_bottom).offset(12);
+            make.width.height.mas_equalTo(24);
         }
     }];
     [_studentCheckbox setImage:[UIImage imageNamed:CHECKBOX_UNSELECTED] forState:UIControlStateNormal];
@@ -286,16 +298,21 @@ singleton_implementation(NDLoginViewController);
     [_takePhotoBtn setSelected:YES];
     [_backgroundIV addSubview:_takePhotoBtn];
     [_takePhotoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.leading.equalTo(_backgroundIV.mas_leading).offset(134);
             make.top.equalTo(_studentCheckbox.mas_bottom).offset(78);
             make.width.mas_equalTo(BTN_WIDTH);
             make.height.mas_equalTo(BTN_HEIGHT);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.leading.equalTo(_backgroundIV.mas_leading).offset(84);
             make.top.equalTo(_studentCheckbox.mas_bottom).offset(25);
             make.width.mas_equalTo(108);
             make.height.mas_equalTo(35);
+        } else if (CURRENT_DEVICE == 5) {
+            make.leading.equalTo(_backgroundIV.mas_leading).offset(84);
+            make.top.equalTo(_studentCheckbox.mas_bottom).offset(20);
+            make.width.mas_equalTo(88);
+            make.height.mas_equalTo(28);
         }
         
     }];
@@ -309,10 +326,12 @@ singleton_implementation(NDLoginViewController);
     [_backgroundIV addSubview:_galleryBtn];
     [_galleryBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.width.height.equalTo(_takePhotoBtn);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.leading.equalTo(_takePhotoBtn.mas_trailing).offset(18);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.leading.equalTo(_takePhotoBtn.mas_trailing).offset(12);
+        } else if (CURRENT_DEVICE == 5) {
+            make.leading.equalTo(_takePhotoBtn.mas_trailing).offset(9);
         }
         
     }];
@@ -328,10 +347,13 @@ singleton_implementation(NDLoginViewController);
         _centerBtn.tag = 105;
         [_centerBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(_bottomIV);
-            if (CURRENT_DEVICE > 7) {
+            if (CURRENT_DEVICE == 8) {
                 make.width.height.equalTo(@186);
                 make.top.equalTo(_bottomIV).offset(48);
-            } else {
+            } else if (CURRENT_DEVICE == 6) {
+                make.width.height.equalTo(@88);
+                make.top.equalTo(_bottomIV).offset(12);
+            } else if (CURRENT_DEVICE == 5) {
                 make.width.height.equalTo(@88);
                 make.top.equalTo(_bottomIV).offset(12);
             }
@@ -352,12 +374,15 @@ singleton_implementation(NDLoginViewController);
     [_bottomIV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.equalTo(_takePhotoBtn.mas_leading);
         make.top.equalTo(_takePhotoBtn.mas_bottom);
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.bottom.equalTo(_backgroundIV.mas_bottom).offset(-66);
             make.width.equalTo(@754);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.bottom.equalTo(_backgroundIV.mas_bottom).offset(-16);
             make.width.equalTo(@484);
+        } else if (CURRENT_DEVICE == 5) {
+            make.bottom.equalTo(_backgroundIV.mas_bottom).offset(-12);
+            make.width.equalTo(@394);
         }
         
     }];
@@ -368,16 +393,21 @@ singleton_implementation(NDLoginViewController);
     [saveBtn setImage:[UIImage imageNamed:@"button_save2"] forState:UIControlStateHighlighted];
     [_bottomIV addSubview:saveBtn];
     [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        if (CURRENT_DEVICE > 7) {
+        if (CURRENT_DEVICE == 8) {
             make.width.equalTo(@142);
             make.height.equalTo(@42);
             make.leading.equalTo(_bottomIV).offset(214);
             make.top.equalTo(_centerBtn.mas_bottom).offset(40);
-        } else {
+        } else if (CURRENT_DEVICE == 6) {
             make.width.equalTo(@98);
             make.height.equalTo(@30);
             make.leading.equalTo(_bottomIV).offset(124);
             make.top.equalTo(_centerBtn.mas_bottom).offset(10);
+        } else if (CURRENT_DEVICE ==5) {
+            make.width.equalTo(@78);
+            make.height.equalTo(@23);
+            make.leading.equalTo(_bottomIV).offset(100);
+            make.top.equalTo(_centerBtn.mas_bottom).offset(8);
         }
         
     }];
@@ -433,11 +463,7 @@ singleton_implementation(NDLoginViewController);
     
     //存储头像到本地
     UIImage *scaledImage;
-    if (CURRENT_DEVICE > 7) {
-        scaledImage = [self scalingAndCroppingImage:self.pickedImage toSize:CGSizeMake(186.f, 186.f)];
-    } else {
-        scaledImage = [self scalingAndCroppingImage:self.pickedImage toSize:CGSizeMake(156.f, 156.f)];
-    }
+    scaledImage = [self scalingAndCroppingImage:self.pickedImage toSize:CGSizeMake(186.f, 186.f)];
     NSString *imageStr = [self imageToNSString:scaledImage];
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     NSString *avatarFilePath = [documentsPath stringByAppendingPathComponent:@"UserAvatarData.txt"];
