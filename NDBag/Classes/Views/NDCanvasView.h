@@ -17,6 +17,7 @@
 
 - (void)didDraw;
 
+
 @end
 
 @interface NDCanvasView : UIView
@@ -54,4 +55,6 @@
 @property (nonatomic, strong) NSMutableArray *receivedStudentStrokesArr;
 
 @property (nonatomic, strong) NDStudentLineModel *tempLine;
+//画笔光标
+@property (nonatomic, strong) UIImageView *penIV;
 @end

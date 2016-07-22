@@ -18,6 +18,7 @@
 
 @property (nonatomic, assign) int pencolor;
 
-
+//修改
+@property (nonatomic, strong) NSString *userId;
 
 @end

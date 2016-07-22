@@ -14,7 +14,7 @@
 
 @property (nonatomic, strong) UIColor *savedColor;
 
-@property (nonatomic, strong) UIImageView *penIV;
+
 
 @end
 
@@ -115,7 +115,7 @@
         if (!self.savedColor) {
             //学生的笔迹颜色为1-5
             self.savedColor = [self getColorWithColorNumber:arc4random() % 5 + 1];
-            line.color = _currentColor = self.savedColor;
+            line.color = self.savedColor;
         } else {
             line.color = self.savedColor;
         }
@@ -182,6 +182,11 @@
     
 }
 
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    self.penIV.hidden = YES;
+    self.penIV = nil;
+}
+
 // 手势结束(画笔抬起)
 
 - (void) touchesEnded:(NSSet *) touches withEvent:(UIEvent *) event
@@ -213,12 +218,12 @@
         self.studentLine = [[NDStudentLineModel alloc] init];
     }
     self.studentLine.function = @"setPathInfoByStudent";
-    self.studentLine.pencolor = [self getColorNumberWithColor:_currentColor];
+    self.studentLine.pencolor = [self getColorNumberWithColor:self.savedColor];
     self.pathInfo = [[NDPathInfo alloc] init];
     self.pathInfo.x = point.x;
     self.pathInfo.y = point.y;
     self.pathInfo.current_time = currentTime;
-    self.pathInfo.lineWidth = _currentSize;
+    self.pathInfo.currentSize = _currentSize;
     self.pathInfo.action = action;
     self.pathInfo.screenWidth = SCREEN_WIDTH;
     if (CURRENT_DEVICE ==8) {
@@ -247,7 +252,7 @@
     self.pathInfo.x = point.x;
     self.pathInfo.y = point.y;
     self.pathInfo.current_time = currentTime;
-    self.pathInfo.lineWidth = _currentSize;
+    self.pathInfo.currentSize = _currentSize;
     self.pathInfo.action = action;
     self.pathInfo.screenWidth = SCREEN_WIDTH;
     if (CURRENT_DEVICE == 8) {
@@ -348,7 +353,7 @@
     int receivedColorNumber = self.receivedLine.pencolor;
     line.color = [self getColorWithColorNumber:receivedColorNumber];
     
-    line.size = self.receivedLine.pathInfo.lineWidth;
+    line.size = self.receivedLine.pathInfo.currentSize;
     
     CGFloat x = self.receivedLine.pathInfo.x;
     CGFloat y = self.receivedLine.pathInfo.y;
@@ -461,7 +466,7 @@
     
     LogRed(@"pathInfo.screenWidth = %g, pathInfo.screenHeight = %g, pathInfo.x = %g, pathInfo.y = %g", pathInfo.screenWidth, pathInfo.screenHeight, pathInfo.x, pathInfo.y);
     
-    line.size = pathInfo.lineWidth;
+    line.size = pathInfo.currentSize;
     CGFloat x = pathInfo.x;
     CGFloat y = pathInfo.y;
     
@@ -504,7 +509,7 @@
     NSArray *pointsArr = line.points;
     UIColor *color = line.color;
     CGFloat size;
-    //没接收到值
+    
     if (line.size > 0) {
         if (CURRENT_DEVICE == 5) {
             size = (line.size / 5) * 3;
@@ -513,7 +518,7 @@
         } else if (CURRENT_DEVICE == 8) {
             size = line.size;
         }
-    } else {
+    } else {//没接收到值
         if (CURRENT_DEVICE == 5) {
             size = 3.f;
         } else if (CURRENT_DEVICE == 6) {

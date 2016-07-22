@@ -687,6 +687,13 @@ static NSString * const reuseIdentifier = @"user";
             [self dismissViewControllerAnimated:YES completion:^{
                 [MBProgressHUD hideHUD];
                 [MBProgressHUD showSuccess:@"退出登录成功"];
+                [self.savedSize setValue:[NSNumber numberWithInteger:109] forKey:@"SAVED_SIZE"];
+                if (self.alertView) {
+                    [self.alertView removeFromSuperview];
+                }
+                if (self.penSizePickerIV) {
+                    [self.penSizePickerIV removeFromSuperview];
+                }
             }];
             
         }
@@ -1112,6 +1119,9 @@ static NSString * const reuseIdentifier = @"user";
     
     NDStudentLineModel *lineModel = [NDStudentLineModel mj_objectWithKeyValues:dict];
     
+    for (NDPathInfo *pathInfo in lineModel.pathInfos) {
+        LogRed(@"pathInfo.currentSize = %g", pathInfo.currentSize);
+    }
     self.canvasView.tempLine = lineModel;
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"needDraw" object:nil];
@@ -1125,22 +1135,24 @@ static NSString * const reuseIdentifier = @"user";
         NDUser *user = [NDUser new];
         user.userID = occupantJID.resource;
         user.userIcon = userIconString;
-        if (!self.allStudentsArray.count) {
-            
-            [self.allStudentsArray addObject:user];
-            //刷新学生列表屏幕显示
-            [self.userCollectionView reloadData];
-        } else {
-            for (int i = 0; i < self.allStudentsArray.count; i++) {
-                NDUser *existedUser = self.allStudentsArray[i];
-                if (![existedUser.userID isEqualToString:user.userID]) {
-                    [self.allStudentsArray addObject:user];
-                    //刷新学生列表屏幕显示
-                    [self.userCollectionView reloadData];
-                }
-            }
-        }
-        
+//        if (!self.allStudentsArray.count) {
+//            
+//            [self.allStudentsArray addObject:user];
+//            //刷新学生列表屏幕显示
+//            [self.userCollectionView reloadData];
+//        } else {
+//            [self.allStudentsArray enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//                if ([obj isKindOfClass:[NDUser class]]) {
+//                    NDUser *existedUser = obj;
+//                    if (![existedUser.userID isEqualToString:user.userID] && idx >= self.allStudentsArray.count) {
+//                         [self.allStudentsArray addObject:user];
+//                        [self.userCollectionView reloadData];
+//                    }
+//                }
+//            }];
+//        }
+        [self.allStudentsArray addObject:user];
+        [self.userCollectionView reloadData];
     }
 }
 #pragma mark 清空屏幕功能
@@ -1174,6 +1186,7 @@ static NSString * const reuseIdentifier = @"user";
     [self.canvasView setNeedsDisplay];
     
     if (self.canvasView.studentLine) {//有值的话才会发送消息
+        self.canvasView.studentLine.userId = self.nickName;
         NSDictionary *dic = [self.canvasView.studentLine.mj_keyValues copy];
         NSDictionary *msgDic = [NSDictionary dictionaryWithObject:dic forKey:@"msg"];
         NSError *error = nil;
@@ -1372,6 +1385,10 @@ static NSString * const reuseIdentifier = @"user";
     [self logoutXMPP];
     
     [self clearScreen];
+    
+    self.canvasView.penIV.hidden = YES;
+    
+    self.canvasView.penIV = nil;
 }
 //退出聊天室的方法
 - (void)logoutXMPP {
@@ -1381,6 +1398,7 @@ static NSString * const reuseIdentifier = @"user";
     self.xmppRoom = nil;
     _netBtn.enabled = YES;
     [MBProgressHUD hideHUD];
+
 }
 
 #pragma mark XMPPManagerDelegate 协议中的方法
@@ -1492,6 +1510,7 @@ static NSString * const reuseIdentifier = @"user";
     NSMutableDictionary *funcDic = [NSMutableDictionary dictionaryWithObject:dic forKey:@"user"];
     [funcDic setObject:@"user_join" forKey:@"function"];
     [funcDic setObject:[NSNumber numberWithInt:0] forKey:@"pencolor"];
+
     NSDictionary *msgDic = [NSDictionary dictionaryWithObject:funcDic forKey:@"msg"];
     
     NSError *error = nil;

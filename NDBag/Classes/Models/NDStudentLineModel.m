@@ -10,8 +10,6 @@
 
 @implementation NDStudentLineModel
 
-
-
 + (NSDictionary *)objectClassInArray {
     return @{
              @"pathInfos" : @"NDPathInfo",

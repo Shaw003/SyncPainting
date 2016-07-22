@@ -16,7 +16,7 @@
 
 @property (nonatomic, strong) NSString *current_time;
 
-@property (nonatomic, assign) CGFloat lineWidth;
+@property (nonatomic, assign) CGFloat currentSize;
 
 @property (nonatomic, assign) int action;
 
