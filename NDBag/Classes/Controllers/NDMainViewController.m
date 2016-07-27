@@ -189,6 +189,9 @@ static NSString * const reuseIdentifier = @"user";
             message = @"当前网络不可用,请检查网络是否正常";
             [MBProgressHUD showError:message];
             _netBtn.enabled = NO;
+            //断网后清空学生列表视图
+            [self.allStudentsArray removeAllObjects];
+            [self.userCollectionView reloadData];
         }
             break;
         case ReachableViaWiFi:
@@ -469,7 +472,8 @@ static NSString * const reuseIdentifier = @"user";
     }];
     
     _titleLabel = [UILabel new];
-    _titleLabel.text = @"ND笔记";
+    NSString *savedName = [[NSUserDefaults standardUserDefaults] valueForKey:@"USER_NAME"];
+    _titleLabel.text = [NSString stringWithFormat:@"%@:%@", IS_TEACHER?@"教师":@"学生", savedName];
     _titleLabel.font = [UIFont systemFontOfSize:22.f];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.textColor = [UIColor whiteColor];
@@ -688,6 +692,7 @@ static NSString * const reuseIdentifier = @"user";
                 [MBProgressHUD hideHUD];
                 [MBProgressHUD showSuccess:@"退出登录成功"];
                 [self.savedSize setValue:[NSNumber numberWithInteger:109] forKey:@"SAVED_SIZE"];
+                self.canvasView.currentSize = 5.f;
                 if (self.alertView) {
                     [self.alertView removeFromSuperview];
                 }
@@ -1398,7 +1403,10 @@ static NSString * const reuseIdentifier = @"user";
     self.xmppRoom = nil;
     _netBtn.enabled = YES;
     [MBProgressHUD hideHUD];
-
+    
+    //离开聊天室后清空学生列表视图
+    [self.allStudentsArray removeAllObjects];
+    [self.userCollectionView reloadData];
 }
 
 #pragma mark XMPPManagerDelegate 协议中的方法
@@ -1536,7 +1544,9 @@ static NSString * const reuseIdentifier = @"user";
 - (void)btnEnable:(BOOL)state {
     
     self.observer = !state;
-    _titleLabel.text = state?@"ND笔记":@"观察者";
+    NSString *savedName = [[NSUserDefaults standardUserDefaults] valueForKey:@"USER_NAME"];
+    NSString *title = [NSString stringWithFormat:@"%@:%@", IS_TEACHER?@"教师":@"学生", savedName];
+    _titleLabel.text = state?title:@"观察者";
     if (!state) {
         _bottomView.hidden = !state;
     }
